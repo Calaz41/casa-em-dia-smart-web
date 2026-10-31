@@ -1,0 +1,74 @@
+<!--
+  Casa em Dia | Selo "atendendo agora"
+  Embed do Framer (Type: HTML), altura 56px. Fica bem no topo, perto do botão de contato.
+  Usa o horário de Brasília mesmo que o visitante esteja em outro fuso.
+-->
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+  body { margin: 0; font-family: "DM Sans", system-ui, sans-serif; background: transparent; }
+  .status {
+    display: inline-flex; align-items: center; gap: 10px;
+    padding: 10px 16px; border-radius: 999px;
+    font-size: 0.92rem; font-weight: 500;
+    background: #e6efe9; color: #1f4d3a;
+  }
+  .status.fechado { background: #f1efeb; color: #4f5a54; }
+  .bolinha { width: 10px; height: 10px; border-radius: 50%; background: #2f8a5b; }
+  .fechado .bolinha { background: #9aa39e; }
+  .aberto .bolinha { animation: pulsa 2s ease-in-out infinite; }
+  @keyframes pulsa { 50% { box-shadow: 0 0 0 6px rgba(47,138,91,.18); } }
+  @media (prefers-reduced-motion: reduce) { .aberto .bolinha { animation: none; } }
+</style>
+
+<p class="status" id="status" role="status">
+  <span class="bolinha" aria-hidden="true"></span>
+  <span id="status-texto">Verificando horário...</span>
+</p>
+
+<script>
+(function () {
+  // [abre, fecha] em horas cheias. null = fechado. Índice 0 = domingo.
+  var HORARIO = [null, [8, 18], [8, 18], [8, 18], [8, 18], [8, 18], [8, 13]];
+  var NOMES = ["domingo", "segunda", "terça", "quarta", "quinta", "sexta", "sábado"];
+
+  function agoraEmBrasilia() {
+    var partes = new Intl.DateTimeFormat("en-US", {
+      timeZone: "America/Sao_Paulo", weekday: "short", hour: "numeric", hour12: false
+    }).formatToParts(new Date());
+    var dias = { Sun: 0, Mon: 1, Tue: 2, Wed: 3, Thu: 4, Fri: 5, Sat: 6 };
+    var dia = 0, hora = 0;
+    partes.forEach(function (p) {
+      if (p.type === "weekday") dia = dias[p.value];
+      if (p.type === "hour") hora = parseInt(p.value, 10) % 24;
+    });
+    return { dia: dia, hora: hora };
+  }
+
+  function proximaAbertura(dia, hora) {
+    for (var i = 0; i < 7; i++) {
+      var d = (dia + i) % 7, h = HORARIO[d];
+      if (!h) continue;
+      if (i === 0 && hora >= h[0]) continue;
+      var quando = i === 0 ? "hoje" : i === 1 ? "amanhã" : NOMES[d];
+      return quando + " às " + h[0] + "h";
+    }
+    return "em breve";
+  }
+
+  function atualiza() {
+    var a = agoraEmBrasilia(), h = HORARIO[a.dia];
+    var el = document.getElementById("status"), txt = document.getElementById("status-texto");
+    if (h && a.hora >= h[0] && a.hora < h[1]) {
+      el.className = "status aberto";
+      txt.textContent = "Atendendo agora · até as " + h[1] + "h";
+    } else {
+      el.className = "status fechado";
+      txt.textContent = "Fora do horário · voltamos " + proximaAbertura(a.dia, a.hora) + " (pode deixar mensagem)";
+    }
+  }
+
+  atualiza();
+  setInterval(atualiza, 60000);
+})();
+</script>
