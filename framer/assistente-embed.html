@@ -1,0 +1,601 @@
+<!--
+  Casa em Dia | Assistente de orçamento
+  Cole este bloco inteiro num componente Embed do Framer (Type: HTML).
+  Altura sugerida do Embed: 960px no desktop e 1250px no mobile.
+  Antes de publicar, troque API_URL e WHATSAPP logo abaixo, no <script>.
+-->
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
+
+<style>
+  :root {
+    --verde: #1f4d3a;
+    --verde-claro: #e6efe9;
+    --laranja: #b0561a;      /* escurecido: contraste 5:1 com texto branco (AA) */
+    --creme: #faf7f2;
+    --texto: #1d211f;
+    --texto-suave: #4f5a54;
+    --borda: #d6dcd8;
+    --alerta: #9b1c1c;
+    --alerta-fundo: #fdecec;
+    --atencao: #8a5a00;
+    --atencao-fundo: #fff4dc;
+    --raio: 14px;
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    font-family: "DM Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+    color: var(--texto);
+    background: transparent;
+    line-height: 1.5;
+  }
+
+  .ced {
+    max-width: 720px;
+    margin: 0 auto;
+    padding: 28px;
+    background: var(--creme);
+    border: 1px solid var(--borda);
+    border-radius: var(--raio);
+  }
+
+  /* ---------- apresentação da empresa ---------- */
+  .empresa {
+    margin: 0 0 24px;
+    padding: 0 0 22px;
+    border-bottom: 1px dashed var(--borda);
+  }
+
+  .empresa-marca {
+    margin: 0 0 6px;
+    font-size: 0.82rem;
+    font-weight: 700;
+    letter-spacing: .08em;
+    text-transform: uppercase;
+    color: var(--laranja);
+  }
+
+  .empresa-desc { margin: 0 0 14px; }
+
+  .empresa-servicos {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin: 0 0 12px;
+    padding: 0;
+    list-style: none;
+  }
+
+  .empresa-servicos li {
+    font-size: 0.82rem;
+    padding: 4px 10px;
+    border-radius: 999px;
+    background: var(--verde-claro);
+    color: var(--verde);
+  }
+
+  .empresa-horario {
+    margin: 0;
+    font-size: 0.85rem;
+    color: var(--texto-suave);
+  }
+
+  .ced h2 {
+    margin: 0 0 6px;
+    font-size: clamp(1.35rem, 2.6vw, 1.7rem);
+    color: var(--verde);
+    letter-spacing: -0.01em;
+  }
+
+  .ced .sub {
+    margin: 0 0 22px;
+    color: var(--texto-suave);
+    font-size: 0.98rem;
+  }
+
+  .campo { margin-bottom: 16px; }
+
+  .campo label {
+    display: block;
+    font-weight: 700;
+    margin-bottom: 6px;
+    font-size: 0.95rem;
+  }
+
+  .dica-campo {
+    font-size: 0.85rem;
+    color: var(--texto-suave);
+    margin: -2px 0 8px;
+  }
+
+  textarea, input[type="text"] {
+    width: 100%;
+    font: inherit;
+    color: inherit;
+    padding: 12px 14px;
+    border: 1.5px solid var(--borda);
+    border-radius: 10px;
+    background: #fff;
+    transition: border-color .15s ease;
+  }
+
+  textarea { min-height: 110px; resize: vertical; }
+
+  textarea:hover, input[type="text"]:hover { border-color: #a9b5ae; }
+
+  /* foco bem visível só para quem navega pelo teclado */
+  :focus { outline: none; }
+  :focus-visible {
+    outline: 3px solid var(--laranja);
+    outline-offset: 2px;
+  }
+
+  .contador {
+    text-align: right;
+    font-size: 0.8rem;
+    color: var(--texto-suave);
+    margin-top: 4px;
+  }
+
+  .exemplos {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin: 4px 0 20px;
+    padding: 0;
+    list-style: none;
+  }
+
+  .exemplos button {
+    font: inherit;
+    font-size: 0.85rem;
+    padding: 8px 12px;
+    min-height: 40px;
+    border-radius: 999px;
+    border: 1px solid var(--borda);
+    background: #fff;
+    color: var(--verde);
+    cursor: pointer;
+  }
+
+  .exemplos button:hover { background: var(--verde-claro); }
+
+  .btn {
+    font: inherit;
+    font-weight: 700;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    min-height: 48px;
+    padding: 12px 22px;
+    border-radius: 10px;
+    border: 0;
+    cursor: pointer;
+    transition: transform .12s ease, background .15s ease;
+  }
+
+  .btn:active { transform: scale(0.98); }
+
+  .btn-principal { background: var(--verde); color: #fff; width: 100%; }
+  .btn-principal:hover { background: #163a2b; }
+  .btn-principal[aria-busy="true"] { opacity: .75; cursor: progress; }
+
+  .btn-whats { background: var(--laranja); color: #fff; }
+  .btn-whats:hover { background: #94481a; }
+
+  .btn-sec {
+    background: #fff;
+    color: var(--verde);
+    border: 1.5px solid var(--verde);
+  }
+
+  .girando {
+    width: 18px; height: 18px;
+    border: 2.5px solid rgba(255,255,255,.4);
+    border-top-color: #fff;
+    border-radius: 50%;
+    animation: gira .8s linear infinite;
+  }
+
+  @keyframes gira { to { transform: rotate(360deg); } }
+
+  .erro-form {
+    color: var(--alerta);
+    font-size: 0.9rem;
+    margin: 8px 0 0;
+  }
+
+  /* ---------- resultado ---------- */
+  .resultado {
+    margin-top: 26px;
+    padding-top: 24px;
+    border-top: 1px dashed var(--borda);
+    animation: surge .35s ease-out;
+  }
+
+  @keyframes surge {
+    from { opacity: 0; transform: translateY(8px); }
+    to   { opacity: 1; transform: none; }
+  }
+
+  .resultado h3 {
+    margin: 0 0 4px;
+    font-size: 1.2rem;
+    color: var(--verde);
+  }
+
+  .origem {
+    font-size: 0.8rem;
+    color: var(--texto-suave);
+    margin: 0 0 16px;
+  }
+
+  .grade {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+    margin-bottom: 18px;
+  }
+
+  .info {
+    background: #fff;
+    border: 1px solid var(--borda);
+    border-radius: 10px;
+    padding: 12px 14px;
+  }
+
+  .info dt {
+    font-size: 0.78rem;
+    text-transform: uppercase;
+    letter-spacing: .04em;
+    color: var(--texto-suave);
+    margin-bottom: 4px;
+  }
+
+  .info dd { margin: 0; font-weight: 700; }
+
+  .selo {
+    display: inline-block;
+    padding: 2px 10px;
+    border-radius: 999px;
+    font-size: 0.88rem;
+  }
+  .selo.alta  { background: var(--alerta-fundo);  color: var(--alerta); }
+  .selo.media { background: var(--atencao-fundo); color: var(--atencao); }
+  .selo.baixa { background: var(--verde-claro);   color: var(--verde); }
+
+  .resumo { margin: 0 0 16px; }
+
+  .aviso-seguranca {
+    background: var(--alerta-fundo);
+    border-left: 4px solid var(--alerta);
+    padding: 12px 14px;
+    border-radius: 8px;
+    margin-bottom: 16px;
+  }
+
+  .aviso-seguranca strong { color: var(--alerta); }
+  .aviso-seguranca ul { margin: 6px 0 0; padding-left: 20px; }
+
+  .acoes {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 12px;
+  }
+
+  .obs-preco {
+    font-size: 0.8rem;
+    color: var(--texto-suave);
+    margin-top: 14px;
+  }
+
+  .sr-only {
+    position: absolute;
+    width: 1px; height: 1px;
+    padding: 0; margin: -1px;
+    overflow: hidden;
+    clip: rect(0,0,0,0);
+    white-space: nowrap;
+    border: 0;
+  }
+
+  /* ---------- celular ---------- */
+  @media (max-width: 600px) {
+    .ced { padding: 20px 16px; border-radius: 0; border-left: 0; border-right: 0; }
+    .grade { grid-template-columns: 1fr; }
+    .acoes .btn { width: 100%; }
+  }
+
+  /* quem pediu menos movimento no sistema não vê animação */
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition: none !important;
+    }
+  }
+</style>
+
+<section class="ced" aria-labelledby="ced-titulo">
+  <header class="empresa" aria-labelledby="ced-empresa-nome">
+    <p class="empresa-marca" id="ced-empresa-nome">Casa em Dia</p>
+    <p class="empresa-desc">Manutenção residencial em Curitiba e região. Uma equipe pequena, com técnicos experientes, que resolve aqueles problemas da casa que vão ficando pra depois: a tomada que esquenta, a torneira pingando, o guarda-roupa ainda na caixa.</p>
+    <ul class="empresa-servicos" aria-label="Serviços que atendemos">
+      <li>Elétrica</li><li>Hidráulica</li><li>Pintura</li><li>Montagem de móveis</li><li>Instalações</li><li>Pequenos reparos</li>
+    </ul>
+    <p class="empresa-horario">Seg a sex, 8h às 18h · Sáb, 8h às 13h</p>
+  </header>
+
+  <h2 id="ced-titulo">Conta pra gente o que aconteceu</h2>
+  <p class="sub">Escreva do seu jeito. O assistente entende o problema, diz qual serviço você precisa e já deixa a mensagem pronta pra mandar no WhatsApp.</p>
+
+  <form id="ced-form" novalidate>
+    <div class="campo">
+      <label for="ced-problema">O que está acontecendo?</label>
+      <p class="dica-campo" id="ced-dica">Quanto mais detalhe, melhor. Ex.: onde fica, desde quando, se piorou.</p>
+      <textarea id="ced-problema" name="problema" maxlength="600" required
+        aria-describedby="ced-dica ced-contador"></textarea>
+      <div class="contador" id="ced-contador" aria-live="polite">0 de 600 caracteres</div>
+    </div>
+
+    <p id="ced-exemplos-label" class="dica-campo">Sem ideia de como escrever? Toque num exemplo:</p>
+    <ul class="exemplos" aria-labelledby="ced-exemplos-label">
+      <li><button type="button" data-exemplo="O chuveiro desarmou o disjuntor e agora tá com cheiro de queimado na caixinha">Chuveiro com cheiro de queimado</button></li>
+      <li><button type="button" data-exemplo="Tem uma mancha de umidade no teto do banheiro que aumentou essa semana, acho que é vazamento do vizinho de cima">Mancha no teto</button></li>
+      <li><button type="button" data-exemplo="Comprei um guarda-roupa de 6 portas e preciso de alguém pra montar no sábado">Montar guarda-roupa</button></li>
+      <li><button type="button" data-exemplo="Quero pintar a sala e o corredor, umas paredes estão descascando">Pintar a sala</button></li>
+    </ul>
+
+    <div class="campo">
+      <label for="ced-bairro">Bairro <span style="font-weight:400;color:var(--texto-suave)">(opcional)</span></label>
+      <input type="text" id="ced-bairro" name="bairro" maxlength="60" autocomplete="address-level3">
+    </div>
+
+    <button type="submit" class="btn btn-principal" id="ced-enviar">Analisar meu pedido</button>
+    <p class="erro-form" id="ced-erro" role="alert" hidden></p>
+  </form>
+
+  <div id="ced-resultado" aria-live="polite"></div>
+</section>
+
+<script>
+(function () {
+  // ===== CONFIGURAÇÃO =====
+  // URL do Worker da Cloudflare (servidor/worker.js). Se ficar vazia, roda só a análise local.
+  var API_URL  = "https://casa-em-dia-ia.calazbuilds.workers.dev";
+  // Número da empresa com DDI e DDD, só dígitos.
+  var WHATSAPP = "554184121629"; // +55 41 8412-1629
+
+  // Catálogo da empresa. Os preços ficam aqui, no site, e não na IA:
+  // a IA só escolhe o serviço; quem diz o valor é a tabela.
+  var SERVICOS = {
+    eletrica:   { nome: "Elétrica residencial",     preco: "a partir de R$ 120" },
+    hidraulica: { nome: "Hidráulica e vazamentos",  preco: "a partir de R$ 130" },
+    pintura:    { nome: "Pintura e acabamento",     preco: "orçamento no local (visita grátis)" },
+    montagem:   { nome: "Montagem de móveis",       preco: "a partir de R$ 90" },
+    instalacao: { nome: "Instalações em geral",     preco: "a partir de R$ 100" },
+    reparos:    { nome: "Pequenos reparos",         preco: "a partir de R$ 80 a hora" },
+    fora:       { nome: "Fora do que atendemos",    preco: "—" }
+  };
+
+  var URGENCIA_TXT = { alta: "Alta", media: "Média", baixa: "Baixa" };
+
+  // ===== ANÁLISE LOCAL (plano B quando a IA não responde) =====
+  // Bem mais simples que a IA: procura palavras-chave. Serve pra demo nunca travar.
+  var PALAVRAS = {
+    eletrica:   ["tomada", "disjuntor", "fio", "fiação", "luz", "lampada", "lâmpada", "energia", "choque", "curto", "chuveiro", "interruptor", "quadro"],
+    hidraulica: ["vazamento", "vazando", "goteira", "cano", "torneira", "descarga", "privada", "vaso", "pia", "entupid", "registro", "infiltra", "umidade", "água", "agua", "caixa d"],
+    pintura:    ["pintar", "pintura", "tinta", "parede", "descascando", "mofo", "textura", "massa corrida"],
+    montagem:   ["montar", "montagem", "guarda-roupa", "guarda roupa", "armário", "armario", "estante", "cama", "rack", "móvel", "movel"],
+    instalacao: ["instalar", "instalação", "instalacao", "ventilador", "suporte", "tv", "televisão", "cortina", "varal", "prateleira", "lustre"],
+    reparos:    ["porta", "fechadura", "janela", "trinco", "dobradiça", "rejunte", "azulejo", "piso", "consertar", "arrumar"]
+  };
+
+  var URGENTE = ["queimado", "queimando", "fumaça", "fumaca", "faísca", "faisca", "choque", "curto", "alagando", "alagou", "jorrando", "estourou", "sem luz", "sem energia", "sem água", "sem agua", "urgente", "agora"];
+  var MEDIO   = ["vazamento", "vazando", "goteira", "piorou", "aumentou", "entupid", "não liga", "nao liga", "parou"];
+
+  function normaliza(t) { return t.toLowerCase(); }
+
+  function analisarLocal(texto) {
+    var t = normaliza(texto);
+
+    if (t.indexOf("gás") > -1 || t.indexOf("gas ") > -1 || t.indexOf("cheiro de gas") > -1) {
+      return {
+        servico: "fora", urgencia: "alta",
+        resumo: "Cheiro de gás não é caso pra gente: é risco imediato.",
+        cuidados: ["Não acenda luz nem fogo, e não use interruptores.", "Feche o registro do gás e abra as janelas.", "Saia de casa e ligue para os Bombeiros (193) ou para a distribuidora de gás."],
+        origem: "local"
+      };
+    }
+
+    var melhor = "reparos", pontos = 0;
+    Object.keys(PALAVRAS).forEach(function (cat) {
+      var p = PALAVRAS[cat].filter(function (w) { return t.indexOf(w) > -1; }).length;
+      if (p > pontos) { pontos = p; melhor = cat; }
+    });
+
+    var urg = "baixa";
+    if (URGENTE.some(function (w) { return t.indexOf(w) > -1; })) urg = "alta";
+    else if (MEDIO.some(function (w) { return t.indexOf(w) > -1; })) urg = "media";
+
+    var cuidados = [];
+    if (melhor === "eletrica" && urg === "alta") {
+      cuidados = ["Desligue o disjuntor do circuito (ou o geral) até o técnico chegar.", "Não encoste em fios ou aparelhos que estejam quentes."];
+    } else if (melhor === "hidraulica" && urg !== "baixa") {
+      cuidados = ["Feche o registro mais próximo do vazamento.", "Se a água estiver perto de tomadas, desligue o disjuntor daquele cômodo."];
+    }
+
+    return {
+      servico: melhor,
+      urgencia: urg,
+      resumo: "Pela descrição, parece um serviço de " + SERVICOS[melhor].nome.toLowerCase() + ".",
+      cuidados: cuidados,
+      origem: "local"
+    };
+  }
+
+  // ===== CHAMADA À IA =====
+  function analisarComIA(texto, bairro) {
+    if (!API_URL || API_URL.indexOf("SEU-USUARIO") > -1) {
+      return Promise.reject(new Error("API não configurada"));
+    }
+    var controle = new AbortController();
+    var timer = setTimeout(function () { controle.abort(); }, 25000);
+
+    return fetch(API_URL, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ problema: texto, bairro: bairro }),
+      signal: controle.signal
+    }).then(function (r) {
+      clearTimeout(timer);
+      if (!r.ok) throw new Error("HTTP " + r.status);
+      return r.json();
+    }).then(function (d) {
+      if (!d || !SERVICOS[d.servico]) throw new Error("Resposta fora do formato");
+      d.origem = "ia";
+      return d;
+    });
+  }
+
+  // ===== TELA =====
+  var form      = document.getElementById("ced-form");
+  var campo     = document.getElementById("ced-problema");
+  var bairroEl  = document.getElementById("ced-bairro");
+  var contador  = document.getElementById("ced-contador");
+  var botao     = document.getElementById("ced-enviar");
+  var erro      = document.getElementById("ced-erro");
+  var saida     = document.getElementById("ced-resultado");
+
+  function atualizaContador() {
+    contador.textContent = campo.value.length + " de 600 caracteres";
+  }
+  campo.addEventListener("input", atualizaContador);
+
+  document.querySelectorAll("[data-exemplo]").forEach(function (b) {
+    b.addEventListener("click", function () {
+      campo.value = b.getAttribute("data-exemplo");
+      atualizaContador();
+      campo.focus();
+    });
+  });
+
+  function esc(s) {
+    return String(s).replace(/[&<>"']/g, function (c) {
+      return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c];
+    });
+  }
+
+  function montaMensagem(texto, bairro, r) {
+    var linhas = ["Olá, Casa em Dia! Vim pelo site."];
+    linhas.push("Serviço: " + SERVICOS[r.servico].nome);
+    linhas.push("Urgência: " + URGENCIA_TXT[r.urgencia]);
+    if (bairro) linhas.push("Bairro: " + bairro);
+    linhas.push("O que está acontecendo: " + texto);
+    return linhas.join("\n");
+  }
+
+  function carregando(sim) {
+    botao.setAttribute("aria-busy", sim ? "true" : "false");
+    botao.disabled = sim;
+    botao.innerHTML = sim
+      ? '<span class="girando" aria-hidden="true"></span> Analisando...'
+      : "Analisar meu pedido";
+  }
+
+  function mostra(texto, bairro, r) {
+    var s = SERVICOS[r.servico];
+    var msg = montaMensagem(texto, bairro, r);
+    var html = "";
+
+    html += '<div class="resultado">';
+    html += '<h3 id="ced-res-titulo" tabindex="-1">Seu pedido, resumido</h3>';
+    html += '<p class="origem">' + (r.origem === "ia"
+      ? "Análise feita por IA. Confira antes de enviar."
+      : "Análise automática simplificada (a IA não respondeu agora).") + "</p>";
+
+    html += '<dl class="grade">';
+    html += '<div class="info"><dt>Serviço</dt><dd>' + esc(s.nome) + "</dd></div>";
+    html += '<div class="info"><dt>Urgência</dt><dd><span class="selo ' + r.urgencia + '">' + URGENCIA_TXT[r.urgencia] + "</span></dd></div>";
+    html += '<div class="info"><dt>Valor de referência</dt><dd>' + esc(s.preco) + "</dd></div>";
+    html += "</dl>";
+
+    html += '<p class="resumo">' + esc(r.resumo) + "</p>";
+
+    if (r.cuidados && r.cuidados.length) {
+      html += '<div class="aviso-seguranca"><strong>Enquanto a gente não chega:</strong><ul>';
+      r.cuidados.slice(0, 3).forEach(function (c) { html += "<li>" + esc(c) + "</li>"; });
+      html += "</ul></div>";
+    }
+
+    if (r.servico !== "fora") {
+      html += '<div class="campo"><label for="ced-msg">Mensagem para o WhatsApp (pode editar)</label>';
+      html += '<textarea id="ced-msg" rows="6">' + esc(msg) + "</textarea></div>";
+      html += '<div class="acoes">';
+      html += '<button type="button" class="btn btn-whats" id="ced-whats">Enviar pelo WhatsApp</button>';
+      html += '<button type="button" class="btn btn-sec" id="ced-copiar">Copiar mensagem</button>';
+      html += "</div>";
+      html += '<p class="obs-preco">Os valores são de referência. O preço final é combinado depois que o técnico vê o serviço.</p>';
+    }
+    html += '<p class="sr-only" id="ced-status-copia" aria-live="polite"></p>';
+    html += "</div>";
+
+    saida.innerHTML = html;
+    document.getElementById("ced-res-titulo").focus();
+
+    var bWhats = document.getElementById("ced-whats");
+    if (bWhats) {
+      bWhats.addEventListener("click", function () {
+        var texto = document.getElementById("ced-msg").value;
+        // o Embed do Framer roda num iframe; abrir em nova aba evita bloqueio
+        window.open("https://wa.me/" + WHATSAPP + "?text=" + encodeURIComponent(texto), "_blank", "noopener");
+      });
+      document.getElementById("ced-copiar").addEventListener("click", function () {
+        var texto = document.getElementById("ced-msg").value;
+        var aviso = document.getElementById("ced-status-copia");
+        var botaoCopia = this;
+        navigator.clipboard.writeText(texto).then(function () {
+          botaoCopia.textContent = "Copiado!";
+          aviso.textContent = "Mensagem copiada.";
+          setTimeout(function () { botaoCopia.textContent = "Copiar mensagem"; }, 2000);
+        }).catch(function () {
+          document.getElementById("ced-msg").select();
+          aviso.textContent = "Selecionei a mensagem. Use Ctrl+C para copiar.";
+        });
+      });
+    }
+  }
+
+  form.addEventListener("submit", function (e) {
+    e.preventDefault();
+    var texto  = campo.value.trim();
+    var bairro = bairroEl.value.trim();
+
+    if (texto.length < 10) {
+      erro.textContent = "Escreve um pouquinho mais sobre o problema (pelo menos uma frase).";
+      erro.hidden = false;
+      campo.setAttribute("aria-invalid", "true");
+      campo.focus();
+      return;
+    }
+    erro.hidden = true;
+    campo.removeAttribute("aria-invalid");
+
+    carregando(true);
+    analisarComIA(texto, bairro)
+      .catch(function () { return analisarLocal(texto); })
+      .then(function (r) { mostra(texto, bairro, r); })
+      .finally(function () { carregando(false); });
+  });
+
+  // deixa a função exposta só pra teste no console
+  window.__cedAnalisarLocal = analisarLocal;
+})();
+</script>
